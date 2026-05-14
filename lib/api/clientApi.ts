@@ -18,7 +18,11 @@ export interface FetchNotesParams {
   search?: string;
   tag?: string;
 }
-
+export type RegisterRequest = {
+  email: string;
+  password: string;
+  username: string;
+};
 export interface NewNote {
   title: string;
   content: string;

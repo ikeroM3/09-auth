@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+
 import { useMutation } from "@tanstack/react-query";
 
 import { useAuthStore } from "@/lib/store/authStore";
