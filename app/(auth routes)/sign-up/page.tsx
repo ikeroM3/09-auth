@@ -3,20 +3,19 @@
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { LoginData, register } from "@/lib/api/clientApi";
+import { register, RegisterRequest } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import { User } from "@/types/user";
 import css from "./Register.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
-
   const setUser = useAuthStore((state) => state.setUser);
 
   const mutation = useMutation<
     User,
     AxiosError<{ message: string }>,
-    LoginData
+    RegisterRequest
   >({
     mutationFn: (data) => register(data),
     onSuccess: (user) => {
@@ -29,9 +28,10 @@ export default function SignUpPage() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
-    const data: LoginData = {
+    const data: RegisterRequest = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
+      username: formData.get("username") as string,
     };
 
     mutation.mutate(data);
@@ -41,6 +41,17 @@ export default function SignUpPage() {
     <main className={css.mainContent}>
       <h1 className={css.formTitle}>Sign up</h1>
       <form className={css.form} onSubmit={handleSubmit}>
+        <div className={css.formGroup}>
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            className={css.input}
+            required
+          />
+        </div>
+
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input
