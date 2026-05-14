@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { nextServer } from "../../api";
+import { api } from "@/lib/api/api";
 import { cookies } from "next/headers";
 import { parse } from "cookie";
 import { isAxiosError } from "axios";
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const apiRes = await nextServer.post("auth/register", body);
+    const apiRes = await api.post("auth/register", body);
 
     const cookieStore = await cookies();
     const setCookie = apiRes.headers["set-cookie"];

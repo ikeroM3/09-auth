@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import { nextServer } from "../../api";
+import { api } from "@/lib/api/api";
 import { cookies } from "next/headers";
 import { logErrorResponse } from "../../_utils/utils";
 import { isAxiosError } from "axios";
@@ -10,7 +10,7 @@ export async function GET() {
   try {
     const cookieStore = await cookies();
 
-    const res = await nextServer.get("/users/me", {
+    const res = await api.get("/users/me", {
       headers: {
         Cookie: cookieStore.toString(),
       },

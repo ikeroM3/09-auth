@@ -1,4 +1,4 @@
-import { nextServer } from "./api";
+import { api } from "./api";
 import { cookies } from "next/headers";
 import type { AxiosResponse } from "axios"; // Додано для типізації
 import type { Note } from "@/types/note";
@@ -16,24 +16,24 @@ const getServerHeaders = async () => {
 
 export const fetchNotes = async (params: FetchNotesParams) => {
   const headers = await getServerHeaders();
-  const res = await nextServer.get("/notes", { ...headers, params });
+  const res = await api.get("/notes", { ...headers, params });
   return res.data;
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
   const headers = await getServerHeaders();
-  const res = await nextServer.get(`/notes/${id}`, headers);
+  const res = await api.get(`/notes/${id}`, headers);
   return res.data;
 };
 
 export const getMe = async (): Promise<User> => {
   const headers = await getServerHeaders();
-  const res = await nextServer.get("/users/me", headers);
+  const res = await api.get("/users/me", headers);
   return res.data;
 };
 
 export const getSession = async (): Promise<AxiosResponse<User>> => {
   const headers = await getServerHeaders();
   // Повертаємо весь об'єкт res, а не res.data
-  return await nextServer.get("/auth/session", headers);
+  return await api.get("/auth/session", headers);
 };

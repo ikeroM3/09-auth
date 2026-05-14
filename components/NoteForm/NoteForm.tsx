@@ -46,6 +46,7 @@ export default function NoteForm({ onClose }: NoteFormProps) {
     if (values.content && values.content.length > 500) return;
 
     await createMutation.mutateAsync(values);
+    clearDraft();
     onClose();
   };
 

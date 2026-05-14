@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { nextServer } from "../../api";
+import { api } from "@/lib/api/api";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
 import { logErrorResponse } from "../../_utils/utils";
@@ -11,7 +11,7 @@ export async function POST() {
     const accessToken = cookieStore.get("accessToken")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
-    await nextServer.post("auth/logout", null, {
+    await api.post("auth/logout", null, {
       headers: {
         Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken}`,
       },

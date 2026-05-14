@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { nextServer } from "../api";
+import { api } from "@/lib/api/api";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
 import { logErrorResponse } from "../_utils/utils";
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const rawTag = request.nextUrl.searchParams.get("tag") ?? "";
     const tag = rawTag === "All" ? "" : rawTag;
 
-    const res = await nextServer.get("/notes", {
+    const res = await api.get("/notes", {
       params: {
         ...(search !== "" && { search }),
         page,

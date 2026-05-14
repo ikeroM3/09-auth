@@ -26,12 +26,21 @@ export default function ProfileEditPage() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload = {
-        userName: username.trim(), // було username
-        avatar: photoFile ? URL.createObjectURL(photoFile) : undefined,
-      };
+      let avatar: string | undefined;
 
-      console.log("SENDING:", payload);
+      if (photoFile) {
+        const reader = new FileReader();
+        avatar = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(photoFile);
+        });
+      }
+
+      const payload = {
+        username: username.trim(),
+        avatar,
+      };
 
       return updateMe(payload);
     },
@@ -44,9 +53,7 @@ export default function ProfileEditPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!username.trim()) return;
-
     mutation.mutate();
   };
 
@@ -59,7 +66,6 @@ export default function ProfileEditPage() {
       <div className={css.profileCard}>
         <h1 className={css.formTitle}>Edit Profile</h1>
 
-        {/* AVATAR */}
         <AvatarPicker
           profilePhotoUrl={user.avatar}
           onChangePhoto={setPhotoFile}
@@ -82,7 +88,7 @@ export default function ProfileEditPage() {
               {mutation.isPending ? "Saving..." : "Save"}
             </button>
 
-            <button type="button" onClick={() => router.push("/profile")}>
+            <button type="button" onClick={() => router.back()}>
               Cancel
             </button>
           </div>

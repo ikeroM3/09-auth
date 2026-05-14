@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { nextServer } from "../../api";
+import { api } from "@/lib/api/api";
 import { cookies } from "next/headers";
 import { logErrorResponse } from "../../_utils/utils";
 import { isAxiosError } from "axios";
@@ -12,7 +12,7 @@ export async function GET(request: Request, { params }: Props) {
   try {
     const cookieStore = await cookies();
     const { id } = await params;
-    const res = await nextServer.get(`/notes/${id}`, {
+    const res = await api.get(`/notes/${id}`, {
       headers: {
         Cookie: cookieStore.toString(),
       },
