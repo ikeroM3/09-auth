@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    const res = await nextServer.post("/notes", body, {
+    const res = await api.post("/notes", body, {
       headers: {
         Cookie: cookieStore.toString(),
         "Content-Type": "application/json",
