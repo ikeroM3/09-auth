@@ -1,59 +1,38 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
-import { checkSession, logout } from "@/lib/api/clientApi";
+import { checkSession, getMe } from "@/lib/api/clientApi";
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const { setUser, clearIsAuthenticated } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(true);
-  const pathname = usePathname();
-  const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
+  const clearIsAuthenticated = useAuthStore(
+    (state) => state.clearIsAuthenticated,
+  );
+  const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
     const verifyAuth = async () => {
-      const isPrivateRoute =
-        pathname.startsWith("/profile") || pathname.startsWith("/notes");
-
       try {
-        const user = await checkSession();
-
-        if (user) {
+        const session = await checkSession();
+        if (session) {
+          const user = await getMe();
           setUser(user);
         } else {
           clearIsAuthenticated();
-          if (isPrivateRoute) {
-            await logout();
-            router.push("/sign-in");
-          }
         }
       } catch {
         clearIsAuthenticated();
-        if (isPrivateRoute) {
-          router.push("/sign-in");
-        }
       } finally {
-        setIsLoading(false);
+        setIsChecked(true);
       }
     };
 
     verifyAuth();
-  }, [pathname, setUser, clearIsAuthenticated, router]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <p>Loading session...</p>
-      </div>
-    );
+  if (!isChecked) {
+    return <p>Loading, please wait...</p>;
   }
 
   return <>{children}</>;

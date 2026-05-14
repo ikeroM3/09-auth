@@ -2,49 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
-
 import { useAuthStore } from "@/lib/store/authStore";
 import { updateMe } from "@/lib/api/clientApi";
-import AvatarPicker from "@/components/AvatarPicker/AvatarPicker";
-
 import css from "./EditProfilePage.module.css";
 
 export default function ProfileEditPage() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
-
-  const [username, setUsername] = useState("");
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    if (user) {
-      setUsername(user.username);
-    }
-  }, [user]);
+  const [username, setUsername] = useState(user?.username ?? "");
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      let avatar: string | undefined;
-
-      if (photoFile) {
-        const reader = new FileReader();
-        avatar = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(photoFile);
-        });
-      }
-
-      const payload = {
-        username: username.trim(),
-        avatar,
-      };
-
-      return updateMe(payload);
-    },
-
+    mutationFn: () => updateMe({ username: username.trim() }),
     onSuccess: (data) => {
       setUser(data);
       router.push("/profile");
@@ -66,15 +36,20 @@ export default function ProfileEditPage() {
       <div className={css.profileCard}>
         <h1 className={css.formTitle}>Edit Profile</h1>
 
-        <AvatarPicker
-          profilePhotoUrl={user.avatar}
-          onChangePhoto={setPhotoFile}
+        <Image
+          src={user.avatar || "https://ac.goit.global/default-avatar.png"}
+          alt="User Avatar"
+          width={120}
+          height={120}
+          className={css.avatar}
         />
 
         <form onSubmit={handleSubmit} className={css.profileInfo}>
-          <div>
-            <label>Username:</label>
+          <div className={css.usernameWrapper}>
+            <label htmlFor="username">Username:</label>
             <input
+              id="username"
+              type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className={css.input}
@@ -84,11 +59,18 @@ export default function ProfileEditPage() {
           <p>Email: {user.email}</p>
 
           <div className={css.actions}>
-            <button type="submit" disabled={mutation.isPending}>
+            <button
+              type="submit"
+              className={css.saveButton}
+              disabled={mutation.isPending}
+            >
               {mutation.isPending ? "Saving..." : "Save"}
             </button>
-
-            <button type="button" onClick={() => router.back()}>
+            <button
+              type="button"
+              className={css.cancelButton}
+              onClick={() => router.back()}
+            >
               Cancel
             </button>
           </div>

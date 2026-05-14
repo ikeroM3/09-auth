@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { api } from "@/lib/api/api";
+import { api } from "../api";
 import { cookies } from "next/headers";
 import { isAxiosError } from "axios";
 import { logErrorResponse } from "../_utils/utils";
@@ -7,21 +7,23 @@ import { logErrorResponse } from "../_utils/utils";
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const search = request.nextUrl.searchParams.get("search") ?? "";
-    const page = Number(request.nextUrl.searchParams.get("page") ?? 1);
-    const rawTag = request.nextUrl.searchParams.get("tag") ?? "";
-    const tag = rawTag === "All" ? "" : rawTag;
+    const { searchParams } = new URL(request.url);
+
+    const params: Record<string, string> = {};
+
+    const page = searchParams.get("page");
+    const perPage = searchParams.get("perPage");
+    const search = searchParams.get("search");
+    const tag = searchParams.get("tag");
+
+    if (page) params.page = page;
+    if (perPage) params.perPage = perPage;
+    if (search) params.search = search;
+    if (tag) params.tag = tag;
 
     const res = await api.get("/notes", {
-      params: {
-        ...(search !== "" && { search }),
-        page,
-        perPage: 12,
-        ...(tag && { tag }),
-      },
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
+      headers: { Cookie: cookieStore.toString() },
+      params,
     });
 
     return NextResponse.json(res.data, { status: res.status });
@@ -40,11 +42,9 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
-
     const body = await request.json();
 
     const res = await api.post("/notes", body, {
