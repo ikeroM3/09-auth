@@ -2,11 +2,6 @@ import { nextServer } from "./api";
 import type { Note, NoteTag } from "@/types/note";
 import type { User } from "@/types/user";
 
-export interface RegisterData {
-  email: string;
-  password: string;
-}
-
 export interface LoginData {
   email: string;
   password: string;
@@ -36,11 +31,10 @@ export interface FetchNotesResponse {
 
 // --- АУТЕНТИФІКАЦІЯ (AUTH) ---
 
-export const register = async (data: RegisterData): Promise<User> => {
+export const register = async (data: RegisterRequest): Promise<User> => {
   const res = await nextServer.post<User>("/auth/register", data);
   return res.data;
 };
-
 export const login = async (data: LoginData): Promise<User> => {
   const res = await nextServer.post<User>("/auth/login", data);
   return res.data;
