@@ -20,7 +20,7 @@ export interface FetchNotesParams {
 export type RegisterRequest = {
   email: string;
   password: string;
-  username: string;
+  username?: string; // опціональне
 };
 export interface NewNote {
   title: string;
