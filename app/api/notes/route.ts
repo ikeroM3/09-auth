@@ -9,17 +9,14 @@ export async function GET(request: NextRequest) {
     const cookieStore = await cookies();
     const { searchParams } = new URL(request.url);
 
-    const params: Record<string, string> = {};
+    const page = Number(searchParams.get("page")) || 1;
+    const perPage = 12;
+    const search = searchParams.get("search") || "";
+    const tag = searchParams.get("tag") || "";
 
-    const page = searchParams.get("page");
-    const perPage = searchParams.get("perPage");
-    const search = searchParams.get("search");
-    const tag = searchParams.get("tag");
-
-    if (page) params.page = page;
-    if (perPage) params.perPage = perPage;
+    const params: Record<string, string | number> = { page, perPage };
     if (search) params.search = search;
-    if (tag) params.tag = tag;
+    if (tag && tag !== "All") params.tag = tag;
 
     const res = await api.get("/notes", {
       headers: { Cookie: cookieStore.toString() },

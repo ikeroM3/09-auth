@@ -7,6 +7,10 @@ export interface LoginData {
   password: string;
 }
 
+export interface RegisterData {
+  email: string;
+  password: string;
+}
 export interface FetchNotesParams {
   page?: number;
   perPage?: number;
@@ -31,7 +35,7 @@ export interface FetchNotesResponse {
 
 // --- АУТЕНТИФІКАЦІЯ (AUTH) ---
 
-export const register = async (data: LoginData): Promise<User> => {
+export const register = async (data: RegisterRequest): Promise<User> => {
   const res = await api.post<User>("/auth/register", data);
   return res.data;
 };
