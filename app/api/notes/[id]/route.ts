@@ -39,7 +39,7 @@ export async function DELETE(request: Request, { params }: Props) {
     const cookieStore = await cookies();
     const { id } = await params;
 
-    const res = await nextServer.delete(`/notes/${id}`, {
+    const res = await api.delete(`/notes/${id}`, {
       headers: {
         Cookie: cookieStore.toString(),
       },
@@ -67,7 +67,7 @@ export async function PATCH(request: Request, { params }: Props) {
     const { id } = await params;
     const body = await request.json();
 
-    const res = await nextServer.patch(`/notes/${id}`, body, {
+    const res = await api.patch(`/notes/${id}`, body, {
       headers: {
         Cookie: cookieStore.toString(),
       },
