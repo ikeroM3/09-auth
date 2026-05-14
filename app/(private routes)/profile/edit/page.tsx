@@ -27,7 +27,7 @@ export default function ProfileEditPage() {
   const mutation = useMutation({
     mutationFn: async () => {
       const payload = {
-        username: username.trim(),
+        userName: username.trim(), // було username
         avatar: photoFile ? URL.createObjectURL(photoFile) : undefined,
       };
 

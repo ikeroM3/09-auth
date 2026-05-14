@@ -24,7 +24,7 @@ export default function NotesClient({ tag }: NotesClientProps) {
     queryFn: () =>
       fetchNotes({
         page,
-        searchText: search,
+        search,
         perPage: 12,
         tag,
       }),
