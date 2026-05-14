@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { login, LoginRequest } from "@/lib/api/clientApi";
+import { login, LoginData } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import { User } from "@/types/user";
 import css from "./login.module.css";
@@ -16,7 +16,7 @@ export default function SignInPage() {
   const mutation = useMutation<
     User,
     AxiosError<{ message: string }>,
-    LoginRequest
+    LoginData
   >({
     mutationFn: (data) => login(data),
     onSuccess: (user) => {
@@ -29,7 +29,7 @@ export default function SignInPage() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
-    const data: LoginRequest = {
+    const data: LoginData = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
     };
