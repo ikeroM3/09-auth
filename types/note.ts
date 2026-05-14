@@ -14,8 +14,3 @@ export interface NoteUpdate {
   content: string;
   tag: NoteTag;
 }
-export interface User {
-  email: string;
-  username: string;
-  avatar: string;
-}

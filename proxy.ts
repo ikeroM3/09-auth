@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkServerSession } from "./lib/api/serverApi";
+import { getSession } from "./lib/api/serverApi";
 
 export async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
@@ -15,7 +15,7 @@ export async function proxy(request: NextRequest) {
 
   if (!isAuthorized && refreshToken) {
     try {
-      const apiRes = await checkServerSession();
+      const apiRes = await getSession();
       if (apiRes && apiRes.data) {
         isAuthorized = true;
 

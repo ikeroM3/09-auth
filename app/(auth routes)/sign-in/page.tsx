@@ -1,51 +1,45 @@
 "use client";
 
-import { useRouter } from "next/dist/client/components/navigation";
-import css from "./login.module.css";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { login, LoginRequest } from "@/lib/api/clientApi";
-import { useNoteDraftStore } from "@/lib/store/noteStore";
-import { ApiError } from "@/app/api/api";
-import { useState } from "react";
+import { useAuthStore } from "@/lib/store/authStore";
+import { User } from "@/types/user";
+import css from "./login.module.css";
 
-export default function Login() {
+export default function SignInPage() {
   const router = useRouter();
-  const [error, setError] = useState("");
-  const setUser = useNoteDraftStore((state) => state.setUser);
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      // Типізуємо дані форми
-      const formValues: LoginRequest = {
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
-      };
-      // Виконуємо запит
-      const user = await login(formValues);
-      // Виконуємо редірект або відображаємо помилку
-      if (user) {
-        setUser(user);
-        router.push("/profile");
-      } else {
-        setError("Invalid email or password");
-      }
-    } catch (error) {
-      setError(
-        (error as ApiError).response?.data?.error ??
-          (error as ApiError).message ??
-          "Oops... some error",
-      );
-    }
+  const setUser = useAuthStore((state) => state.setUser);
+
+  const mutation = useMutation<
+    User,
+    AxiosError<{ message: string }>,
+    LoginRequest
+  >({
+    mutationFn: (data) => login(data),
+    onSuccess: (user) => {
+      setUser(user);
+      router.push("/profile");
+    },
+  });
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    const data: LoginRequest = {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    };
+
+    mutation.mutate(data);
   };
+
   return (
     <main className={css.mainContent}>
-      <form
-        className={css.form}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const formData = new FormData(e.currentTarget);
-          handleSubmit(formData);
-        }}
-      >
+      <form className={css.form} onSubmit={handleSubmit}>
         <h1 className={css.formTitle}>Sign in</h1>
 
         <div className={css.formGroup}>
@@ -71,12 +65,21 @@ export default function Login() {
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>
-            Log in
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Logging in..." : "Log in"}
           </button>
         </div>
 
-        <p className={css.error}>{error}</p>
+        {mutation.isError && (
+          <p className={css.error}>
+            {mutation.error.response?.data?.message ||
+              "Login failed. Check your credentials."}
+          </p>
+        )}
       </form>
     </main>
   );

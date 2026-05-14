@@ -3,8 +3,9 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import QueryProvider from "@/components/TanStackProvider/TanStackProvider";
 
-import Providers from "@/components/TanStackProvider/TanStackProvider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -37,15 +38,16 @@ export default function RootLayout({
   modal: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={roboto.variable}>
       <body className={roboto.className}>
-        <Providers>
-          <Header />
-
-          <main>{children}</main>
-          {modal}
-          <Footer />
-        </Providers>
+        <QueryProvider>
+          <AuthProvider>
+            <Header />
+            <main>{children}</main>
+            {modal}
+            <Footer />
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

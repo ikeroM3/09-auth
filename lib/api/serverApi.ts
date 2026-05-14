@@ -1,80 +1,39 @@
-import { cookies } from "next/headers";
 import { nextServer } from "./api";
-import { type Note } from "@/types/note";
+import { cookies } from "next/headers";
+import type { AxiosResponse } from "axios"; // Додано для типізації
+import type { Note } from "@/types/note";
+import type { User } from "@/types/user";
+import type { FetchNotesParams } from "./clientApi";
 
-import { type FetchNotesResponse } from "./clientApi";
-
-interface ParamsGetProps {
-  searchText?: string;
-  tag?: string;
-  page?: number;
-  perPage?: number;
-}
-
-const getCookieHeader = async () => {
+const getServerHeaders = async () => {
   const cookieStore = await cookies();
-
-  return cookieStore.toString();
-};
-
-// NOTES
-
-export const fetchServerNotes = async ({
-  searchText,
-  tag,
-  page = 1,
-}: ParamsGetProps) => {
-  const params: Record<string, string | number> = {
-    page,
-    perPage: 12,
+  return {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
   };
+};
 
-  if (searchText) {
-    params.search = searchText;
-  }
-
-  if (tag) {
-    params.tag = tag;
-  }
-
-  const res = await nextServer.get<FetchNotesResponse>("/notes", {
-    params,
-    headers: {
-      Cookie: await getCookieHeader(),
-    },
-  });
-
+export const fetchNotes = async (params: FetchNotesParams) => {
+  const headers = await getServerHeaders();
+  const res = await nextServer.get("/notes", { ...headers, params });
   return res.data;
 };
 
-export const fetchServerNoteById = async (id: string): Promise<Note> => {
-  const res = await nextServer.get<Note>(`/notes/${id}`, {
-    headers: {
-      Cookie: await getCookieHeader(),
-    },
-  });
-
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const headers = await getServerHeaders();
+  const res = await nextServer.get(`/notes/${id}`, headers);
   return res.data;
 };
 
-// AUTH
-
-export const checkServerSession = async () => {
-  const res = await nextServer.get("/auth/session", {
-    headers: {
-      Cookie: await getCookieHeader(),
-    },
-  });
-
+export const getMe = async (): Promise<User> => {
+  const headers = await getServerHeaders();
+  const res = await nextServer.get("/users/me", headers);
   return res.data;
 };
 
-export const getServerMe = async () => {
-  const res = await nextServer.get("/auth/me", {
-    headers: {
-      Cookie: await getCookieHeader(),
-    },
-  });
-
-  return res.data;
+export const getSession = async (): Promise<AxiosResponse<User>> => {
+  const headers = await getServerHeaders();
+  // Повертаємо весь об'єкт res, а не res.data
+  return await nextServer.get("/auth/session", headers);
 };

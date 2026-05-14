@@ -1,40 +1,46 @@
 "use client";
-import { register, RegisterRequest } from "@/lib/api/clientApi";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ApiError } from "@/app/api/api";
-import css from "./Register.module.css";
-import { useNoteDraftStore } from "@/lib/store/noteStore";
-export default function Register() {
-  const router = useRouter();
-  const [error, setError] = useState("");
-  const setUser = useNoteDraftStore((state) => state.setUser);
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      const formValues: RegisterRequest = {
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
-      };
-      const user = await register(formValues);
-      if (user) {
-        setUser(user);
-        router.push("/profile");
-      } else {
-        setError("Failed to register");
-      }
-    } catch (error) {
-      setError(
-        (error as ApiError).response?.data?.error ??
-          (error as ApiError).message ??
-          "Oops... some error",
-      );
-    }
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { register, RegisterRequest } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
+import { User } from "@/types/user";
+import css from "./Register.module.css";
+
+export default function SignUpPage() {
+  const router = useRouter();
+
+  const setUser = useAuthStore((state) => state.setUser);
+
+  const mutation = useMutation<
+    User,
+    AxiosError<{ message: string }>,
+    RegisterRequest
+  >({
+    mutationFn: (data) => register(data),
+    onSuccess: (user) => {
+      setUser(user);
+      router.push("/profile");
+    },
+  });
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    const data: RegisterRequest = {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    };
+
+    mutation.mutate(data);
   };
+
   return (
     <main className={css.mainContent}>
       <h1 className={css.formTitle}>Sign up</h1>
-      <form action={handleSubmit}>
+      <form className={css.form} onSubmit={handleSubmit}>
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input
@@ -58,12 +64,21 @@ export default function Register() {
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>
-            Register
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Registering..." : "Register"}
           </button>
         </div>
 
-        <p className={css.error}>Error</p>
+        {mutation.isError && (
+          <p className={css.error}>
+            {mutation.error.response?.data?.message ||
+              "Registration failed. Please try again."}
+          </p>
+        )}
       </form>
     </main>
   );
