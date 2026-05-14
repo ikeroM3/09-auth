@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 import { register, LoginData } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import { User } from "@/types/user";
-import css from "./SignUpPage.module.css";
+import css from "./Register.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
