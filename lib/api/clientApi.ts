@@ -50,8 +50,13 @@ export const logout = async (): Promise<void> => {
 
 /** Перевірка активної сесії */
 export const checkSession = async (): Promise<User | null> => {
-  const res = await api.get<User | null>("/auth/session");
-  return res.data;
+  try {
+    await api.post("/auth/refresh");
+    const res = await api.get<User>("/users/me");
+    return res.data;
+  } catch {
+    return null;
+  }
 };
 
 // --- КОРИСТУВАЧІ (USERS) ---

@@ -32,8 +32,12 @@ export const getMe = async (): Promise<User> => {
   return res.data;
 };
 
-export const getSession = async (): Promise<AxiosResponse<User>> => {
+export const getSession = async (): Promise<User> => {
   const headers = await getServerHeaders();
-  // Повертаємо весь об'єкт res, а не res.data
-  return await api.get("/auth/session", headers);
+
+  await api.post("/auth/refresh", null, headers);
+
+  const res = await api.get<User>("/users/me", headers);
+
+  return res.data;
 };
