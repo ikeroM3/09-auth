@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const apiRes = await api.post("/api/auth/register", body);
+    const apiRes = await api.post("/auth/register", body);
 
     const cookieStore = await cookies();
     const setCookie = apiRes.headers["set-cookie"];
@@ -26,8 +26,12 @@ export async function POST(req: NextRequest) {
         };
         if (parsed.accessToken)
           cookieStore.set("accessToken", parsed.accessToken, options);
+
         if (parsed.refreshToken)
           cookieStore.set("refreshToken", parsed.refreshToken, options);
+
+        if (parsed.sessionId)
+          cookieStore.set("sessionId", parsed.sessionId, options);
       }
       return NextResponse.json(apiRes.data, { status: apiRes.status });
     }

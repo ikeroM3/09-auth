@@ -1,6 +1,5 @@
 import { api } from "@/app/api/api";
 import { cookies } from "next/headers";
-import type { AxiosResponse } from "axios"; // Додано для типізації
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
 import type { FetchNotesParams } from "./clientApi";
