@@ -1,11 +1,16 @@
 import css from "@/components/Header/header.module.css";
 import Link from "next/link";
 import AuthNav from "@/components/AuthNavigation/AuthNavigation";
+import { Sparkles } from "lucide-react";
+
 export default function Header() {
   return (
     <header className={css.header}>
       <Link href="/" aria-label="Home" className={css.logo}>
-        NoteHub
+        <span aria-hidden="true">
+          <Sparkles size={18} />
+        </span>
+        NoteHub OS
       </Link>
       <nav aria-label="Main Navigation">
         <ul className={css.navigation}>

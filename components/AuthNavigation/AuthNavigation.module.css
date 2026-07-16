@@ -1,38 +1,52 @@
 .userEmail {
-  color: white;
+  max-width: 180px;
   margin-right: 0.5rem;
+  overflow: hidden;
+  color: var(--text-muted);
   font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .logoutButton {
-  background: transparent;
-  border: 1px solid white;
-  color: white;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--button-border);
+  border-radius: 12px;
+  color: var(--text-strong);
+  background: var(--button-bg);
   cursor: pointer;
   font-size: 0.9rem;
   transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .logoutButton:hover {
-  background-color: white;
-  color: #333;
+  color: white;
+  background: linear-gradient(135deg, #6366f1, #0ea5e9);
+  transform: translate3d(0, -1px, 0);
 }
 
 .navigationItem {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .navigationLink {
   text-decoration: none;
-  color: white;
+  color: var(--text);
   font-size: 1rem;
 }
 
 .navigationLink:hover {
-  color: #ddd;
+  color: var(--text-strong);
+}
+
+@media (max-width: 720px) {
+  .userEmail {
+    display: none;
+  }
 }

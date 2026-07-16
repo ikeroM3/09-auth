@@ -6,6 +6,8 @@ import { AxiosError } from "axios";
 import { login, LoginData } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import { User } from "@/types/user";
+import { motion } from "framer-motion";
+import { Loader2, Lock, Mail, Sparkles } from "lucide-react";
 import css from "./login.module.css";
 
 export default function SignInPage() {
@@ -39,29 +41,43 @@ export default function SignInPage() {
 
   return (
     <main className={css.mainContent}>
-      <form className={css.form} onSubmit={handleSubmit}>
-        <h1 className={css.formTitle}>Sign in</h1>
+      <motion.form
+        className={css.form}
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 180, damping: 24 }}
+      >
+        <span className={css.formKicker}>
+          <Sparkles size={15} aria-hidden="true" />
+          Welcome back
+        </span>
+        <h1 className={css.formTitle}>Sign in to NoteHub OS</h1>
 
         <div className={css.formGroup}>
-          <label htmlFor="email">Email</label>
+          <Mail size={18} aria-hidden="true" />
           <input
             id="email"
             type="email"
             name="email"
             className={css.input}
+            placeholder=" "
             required
           />
+          <label htmlFor="email">Email</label>
         </div>
 
         <div className={css.formGroup}>
-          <label htmlFor="password">Password</label>
+          <Lock size={18} aria-hidden="true" />
           <input
             id="password"
             type="password"
             name="password"
             className={css.input}
+            placeholder=" "
             required
           />
+          <label htmlFor="password">Password</label>
         </div>
 
         <div className={css.actions}>
@@ -70,6 +86,9 @@ export default function SignInPage() {
             className={css.submitButton}
             disabled={mutation.isPending}
           >
+            {mutation.isPending && (
+              <Loader2 className={css.spinIcon} size={18} aria-hidden="true" />
+            )}
             {mutation.isPending ? "Logging in..." : "Log in"}
           </button>
         </div>
@@ -80,7 +99,7 @@ export default function SignInPage() {
               "Login failed. Check your credentials."}
           </p>
         )}
-      </form>
+      </motion.form>
     </main>
   );
 }

@@ -1,10 +1,25 @@
 .footer {
-  padding: 20px;
-  background-color: #f0f0f0;
+  padding: 22px clamp(16px, 3vw, 38px);
+  border-top: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--app-bg) 86%, transparent);
   text-align: center;
   font-size: 14px;
-  color: #555;
-  border-top: 1px solid #ddd;
+  color: var(--text-muted);
+  backdrop-filter: blur(18px);
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 1720px;
+  margin: 0 auto;
+}
+
+.content p {
+  margin: 0;
 }
 
 .wrap {
@@ -14,11 +29,18 @@
 }
 
 .footer a {
-  color: #226ec5;
+  margin-left: 6px;
+  color: var(--accent-text);
   font-weight: 600;
   text-decoration: none;
 }
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .content {
+    justify-content: center;
+  }
 }

@@ -1,14 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import NoteForm from "@/components/NoteForm/NoteForm";
+import { useState } from "react";
+import CreateNoteDialog from "@/components/PremiumNotes/CreateNoteDialog";
 
 export default function CreateNoteClient() {
   const router = useRouter();
+  const [open, setOpen] = useState(true);
 
-  const handleClose = () => {
-    router.push("/notes/filter/all");
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (!nextOpen) router.push("/notes/filter/all");
   };
 
-  return <NoteForm onClose={handleClose} />;
+  return (
+    <CreateNoteDialog
+      open={open}
+      onOpenChange={handleOpenChange}
+      onCreated={() => undefined}
+    />
+  );
 }
