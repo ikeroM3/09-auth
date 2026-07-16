@@ -20,7 +20,12 @@ import {
   useReducedMotion,
   useSpring,
 } from "framer-motion";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import {
   Archive,
@@ -58,7 +63,7 @@ import { createNote, deleteNote, fetchNotes } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import type { Note } from "@/types/note";
 import css from "./PremiumNotesWorkspace.module.css";
-
+import type { HTMLMotionProps } from "framer-motion";
 const CreateNoteDialog = dynamic(() => import("./CreateNoteDialog"), {
   ssr: false,
   loading: () => <div className={css.dialogPreloader} aria-hidden="true" />,
@@ -127,15 +132,25 @@ function resolveTheme(theme: ThemeMode) {
     : "dark";
 }
 
-export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProps) {
+export default function PremiumNotesWorkspace({
+  tag,
+}: PremiumNotesWorkspaceProps) {
   const prefersReducedMotion = useReducedMotion();
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
   const searchRef = useRef<HTMLInputElement | null>(null);
   const parallaxX = useMotionValue(0);
   const parallaxY = useMotionValue(0);
-  const smoothX = useSpring(parallaxX, { stiffness: 55, damping: 22, mass: 0.6 });
-  const smoothY = useSpring(parallaxY, { stiffness: 55, damping: 22, mass: 0.6 });
+  const smoothX = useSpring(parallaxX, {
+    stiffness: 55,
+    damping: 22,
+    mass: 0.6,
+  });
+  const smoothY = useSpring(parallaxY, {
+    stiffness: 55,
+    damping: 22,
+    mass: 0.6,
+  });
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -178,8 +193,14 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
   }, [data?.notes]);
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem("notehub-theme") as ThemeMode | null;
-    if (storedTheme === "dark" || storedTheme === "light" || storedTheme === "system") {
+    const storedTheme = window.localStorage.getItem(
+      "notehub-theme",
+    ) as ThemeMode | null;
+    if (
+      storedTheme === "dark" ||
+      storedTheme === "light" ||
+      storedTheme === "system"
+    ) {
       setTheme(storedTheme);
     }
   }, []);
@@ -257,23 +278,30 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
   });
 
   const activeTag = useMemo(
-    () => sidebarTags.find((item) => item.value.toLowerCase() === tag.toLowerCase()) ?? sidebarTags[0],
+    () =>
+      sidebarTags.find(
+        (item) => item.value.toLowerCase() === tag.toLowerCase(),
+      ) ?? sidebarTags[0],
     [tag],
   );
 
   const suggestions = useMemo(() => {
-    const source = orderedNotes.length ? orderedNotes : data?.notes ?? [];
+    const source = orderedNotes.length ? orderedNotes : (data?.notes ?? []);
     const normalizedSearch = searchInput.trim().toLowerCase();
     const fromNotes = source
       .flatMap((note) => [note.title, note.tag])
       .filter(Boolean)
       .filter((value, index, values) => values.indexOf(value) === index)
       .filter((value) =>
-        normalizedSearch ? value.toLowerCase().includes(normalizedSearch) : true,
+        normalizedSearch
+          ? value.toLowerCase().includes(normalizedSearch)
+          : true,
       )
       .slice(0, 4);
 
-    return fromNotes.length ? fromNotes : ["Roadmap", "Meeting", "Ideas", "Personal"];
+    return fromNotes.length
+      ? fromNotes
+      : ["Roadmap", "Meeting", "Ideas", "Personal"];
   }, [data?.notes, orderedNotes, searchInput]);
 
   const totalPages = data?.totalPages ?? 0;
@@ -331,7 +359,9 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
   const handleDelete = useCallback(
     (note: Note) => {
       setLastDeleted(note);
-      setOrderedNotes((current) => current.filter((item) => item._id !== note._id));
+      setOrderedNotes((current) =>
+        current.filter((item) => item._id !== note._id),
+      );
       setContextMenu(null);
       showToast("Note deleted", "Undo");
       deleteMutation.mutate(note._id, {
@@ -356,7 +386,11 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
       aria-label="Premium notes workspace"
       onPointerMove={handleWorkspacePointerMove}
     >
-      <AmbientBackground x={smoothX} y={smoothY} reduced={Boolean(prefersReducedMotion)} />
+      <AmbientBackground
+        x={smoothX}
+        y={smoothY}
+        reduced={Boolean(prefersReducedMotion)}
+      />
 
       <motion.aside
         className={css.sidebar}
@@ -365,7 +399,11 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
         transition={{ type: "spring", stiffness: 240, damping: 28 }}
       >
         <div className={css.sidebarTop}>
-          <Link className={css.workspaceSwitcher} href="/notes/filter/all" aria-label="Go to notes">
+          <Link
+            className={css.workspaceSwitcher}
+            href="/notes/filter/all"
+            aria-label="Go to notes"
+          >
             <span className={css.logoMark}>
               <Sparkles size={18} aria-hidden="true" />
             </span>
@@ -392,7 +430,11 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
             data-tooltip={sidebarOpen ? "Collapse" : "Expand"}
             onClick={() => setSidebarOpen((value) => !value)}
           >
-            {sidebarOpen ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
+            {sidebarOpen ? (
+              <X size={18} aria-hidden="true" />
+            ) : (
+              <Menu size={18} aria-hidden="true" />
+            )}
           </button>
         </div>
 
@@ -478,7 +520,9 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
               value={searchInput}
               onChange={(event) => handleSearchChange(event.target.value)}
               onFocus={() => setSearchFocused(true)}
-              onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}
+              onBlur={() =>
+                window.setTimeout(() => setSearchFocused(false), 120)
+              }
               aria-label="Search notes"
               placeholder=" "
             />
@@ -491,7 +535,9 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                 >
-                  {searchFocused ? "Search tags, titles, or fragments" : "Search your thinking"}
+                  {searchFocused
+                    ? "Search tags, titles, or fragments"
+                    : "Search your thinking"}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -544,7 +590,9 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
                 onClick={() => setProfileOpen((value) => !value)}
               >
                 <span className={css.avatar} aria-hidden="true">
-                  {(user?.username || user?.email || "N").slice(0, 1).toUpperCase()}
+                  {(user?.username || user?.email || "N")
+                    .slice(0, 1)
+                    .toUpperCase()}
                 </span>
                 <span>Profile</span>
                 <ChevronDown size={15} aria-hidden="true" />
@@ -580,13 +628,20 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
             className={css.heroCopy}
             initial={prefersReducedMotion ? false : { opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05, type: "spring", stiffness: 190, damping: 24 }}
+            transition={{
+              delay: 0.05,
+              type: "spring",
+              stiffness: 190,
+              damping: 24,
+            }}
           >
             <span className={css.kicker}>
               <Sparkles size={15} aria-hidden="true" />
               {activeTag.label}
             </span>
-            <h1 id="workspace-title">A calmer command center for every note.</h1>
+            <h1 id="workspace-title">
+              A calmer command center for every note.
+            </h1>
             <p>
               Search, sort, favorite, reorder, and capture ideas in a glassy
               workspace tuned for focus.
@@ -594,8 +649,18 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
           </motion.div>
 
           <div className={css.metricsRow} aria-label="Workspace metrics">
-            <MetricCard label="Visible notes" value={activeCount} icon={FileText} delay={0.08} />
-            <MetricCard label="Favorites" value={favoriteCount} icon={Star} delay={0.14} />
+            <MetricCard
+              label="Visible notes"
+              value={activeCount}
+              icon={FileText}
+              delay={0.08}
+            />
+            <MetricCard
+              label="Favorites"
+              value={favoriteCount}
+              icon={Star}
+              delay={0.14}
+            />
             <MetricCard
               label="Flow score"
               value={isFetching ? "Sync" : "98"}
@@ -615,11 +680,19 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
             <div className={css.boardTools}>
               {isFetching && !isLoading && (
                 <span className={css.syncing} role="status">
-                  <Loader2 className={css.spinIcon} size={15} aria-hidden="true" />
+                  <Loader2
+                    className={css.spinIcon}
+                    size={15}
+                    aria-hidden="true"
+                  />
                   Syncing
                 </span>
               )}
-              <RippleButton className={css.primaryButton} type="button" onClick={() => setCreateOpen(true)}>
+              <RippleButton
+                className={css.primaryButton}
+                type="button"
+                onClick={() => setCreateOpen(true)}
+              >
                 <Plus size={18} aria-hidden="true" />
                 New note
               </RippleButton>
@@ -663,7 +736,12 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
               title="The notebook could not sync"
               copy="Check your connection or session, then try again."
               actionLabel="Retry"
-              onAction={() => queryClient.invalidateQueries({ queryKey: ["notes"], exact: false })}
+              onAction={() =>
+                queryClient.invalidateQueries({
+                  queryKey: ["notes"],
+                  exact: false,
+                })
+              }
             />
           ) : orderedNotes.length ? (
             <Reorder.Group
@@ -682,13 +760,19 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
                     expanded={expandedNote === note._id}
                     favorite={favorites.has(note._id)}
                     onExpand={() =>
-                      setExpandedNote((current) => (current === note._id ? null : note._id))
+                      setExpandedNote((current) =>
+                        current === note._id ? null : note._id,
+                      )
                     }
                     onFavorite={() => toggleFavorite(note._id)}
                     onDelete={() => handleDelete(note)}
                     onContextMenu={(event) => {
                       event.preventDefault();
-                      setContextMenu({ note, x: event.clientX, y: event.clientY });
+                      setContextMenu({
+                        note,
+                        x: event.clientX,
+                        y: event.clientY,
+                      });
                     }}
                   />
                 ))}
@@ -712,21 +796,25 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  className={item === page ? css.currentPage : ""}
-                  aria-current={item === page ? "page" : undefined}
-                  onClick={() => setPage(item)}
-                >
-                  {item}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                (item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className={item === page ? css.currentPage : ""}
+                    aria-current={item === page ? "page" : undefined}
+                    onClick={() => setPage(item)}
+                  >
+                    {item}
+                  </button>
+                ),
+              )}
               <button
                 type="button"
                 disabled={page === totalPages}
-                onClick={() => setPage((value) => Math.min(value + 1, totalPages))}
+                onClick={() =>
+                  setPage((value) => Math.min(value + 1, totalPages))
+                }
               >
                 Next
               </button>
@@ -762,7 +850,11 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
             exit={{ opacity: 0, scale: 0.96, y: 6 }}
             transition={{ type: "spring", stiffness: 320, damping: 25 }}
           >
-            <button type="button" role="menuitem" onClick={() => toggleFavorite(contextMenu.note._id)}>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => toggleFavorite(contextMenu.note._id)}
+            >
               <Heart size={15} aria-hidden="true" />
               Favorite
             </button>
@@ -770,7 +862,11 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
               <Archive size={15} aria-hidden="true" />
               Open details
             </Link>
-            <button type="button" role="menuitem" onClick={() => handleDelete(contextMenu.note)}>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => handleDelete(contextMenu.note)}
+            >
               <Trash2 size={15} aria-hidden="true" />
               Delete
             </button>
@@ -792,7 +888,11 @@ export default function PremiumNotesWorkspace({ tag }: PremiumNotesWorkspaceProp
             <Circle size={10} aria-hidden="true" />
             <span>{toast.message}</span>
             {toast.action && (
-              <button type="button" onClick={handleUndo} disabled={undoMutation.isPending}>
+              <button
+                type="button"
+                onClick={handleUndo}
+                disabled={undoMutation.isPending}
+              >
                 {undoMutation.isPending ? "Restoring..." : toast.action}
               </button>
             )}
@@ -844,11 +944,12 @@ function ThemeSwitch({
   value: ThemeMode;
   onChange: (value: ThemeMode) => void;
 }) {
-  const options: Array<{ value: ThemeMode; label: string; icon: LucideIcon }> = [
-    { value: "dark", label: "Dark theme", icon: Moon },
-    { value: "light", label: "Light theme", icon: Sun },
-    { value: "system", label: "System theme", icon: Circle },
-  ];
+  const options: Array<{ value: ThemeMode; label: string; icon: LucideIcon }> =
+    [
+      { value: "dark", label: "Dark theme", icon: Moon },
+      { value: "light", label: "Light theme", icon: Sun },
+      { value: "system", label: "System theme", icon: Circle },
+    ];
 
   return (
     <div className={css.themeSwitch} role="group" aria-label="Theme">
@@ -864,7 +965,9 @@ function ThemeSwitch({
             aria-pressed={active}
             onClick={() => onChange(option.value)}
           >
-            {active && <motion.span layoutId="theme-pill" className={css.themePill} />}
+            {active && (
+              <motion.span layoutId="theme-pill" className={css.themePill} />
+            )}
             <Icon size={15} aria-hidden="true" />
           </button>
         );
@@ -910,8 +1013,10 @@ function RippleButton({
   children,
   onClick,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
-  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number; size: number }>>([]);
+}: HTMLMotionProps<"button">) {
+  const [ripples, setRipples] = useState<
+    Array<{ id: number; x: number; y: number; size: number }>
+  >([]);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 160, damping: 16 });
@@ -1021,7 +1126,9 @@ function NoteCard({
       onContextMenu={onContextMenu}
       onPointerMove={handlePointerMove}
       onPointerLeave={resetTilt}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 24, scale: 0.96 }}
+      initial={
+        prefersReducedMotion ? false : { opacity: 0, y: 24, scale: 0.96 }
+      }
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.94 }}
       whileHover={prefersReducedMotion ? undefined : { y: -7, scale: 1.012 }}
@@ -1058,7 +1165,9 @@ function NoteCard({
           <button
             className={`${css.iconButton} ${favorite ? css.favoriteActive : ""}`}
             type="button"
-            aria-label={favorite ? "Remove note from favorites" : "Favorite note"}
+            aria-label={
+              favorite ? "Remove note from favorites" : "Favorite note"
+            }
             aria-pressed={favorite}
             data-tooltip="Favorite"
             onClick={(event) => {
@@ -1067,10 +1176,18 @@ function NoteCard({
             }}
           >
             <motion.span
-              animate={favorite ? { scale: [1, 1.35, 1], rotate: [0, -8, 0] } : { scale: 1 }}
+              animate={
+                favorite
+                  ? { scale: [1, 1.35, 1], rotate: [0, -8, 0] }
+                  : { scale: 1 }
+              }
               transition={{ duration: 0.35 }}
             >
-              <Heart size={17} fill={favorite ? "currentColor" : "none"} aria-hidden="true" />
+              <Heart
+                size={17}
+                fill={favorite ? "currentColor" : "none"}
+                aria-hidden="true"
+              />
             </motion.span>
           </button>
           <button
@@ -1094,7 +1211,9 @@ function NoteCard({
         </div>
       </div>
 
-      <p className={css.notePreview}>{note.content || "No preview yet. Open the note and give it a voice."}</p>
+      <p className={css.notePreview}>
+        {note.content || "No preview yet. Open the note and give it a voice."}
+      </p>
 
       <AnimatePresence initial={false}>
         {expanded && (
@@ -1193,7 +1312,11 @@ function EmptyState({
       </motion.div>
       <h3>{title}</h3>
       <p>{copy}</p>
-      <RippleButton className={css.primaryButton} type="button" onClick={onAction}>
+      <RippleButton
+        className={css.primaryButton}
+        type="button"
+        onClick={onAction}
+      >
         <Plus size={18} aria-hidden="true" />
         {actionLabel}
       </RippleButton>
