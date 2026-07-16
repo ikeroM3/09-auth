@@ -14,9 +14,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const session = await checkSession();
-        if (session) {
-          const user = await getMe();
+        const user = await checkSession();
+
+        if (user) {
           setUser(user);
         } else {
           clearIsAuthenticated();
@@ -29,7 +29,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     verifyAuth();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!isChecked) {
     return <p>Loading, please wait...</p>;

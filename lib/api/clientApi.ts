@@ -35,15 +35,15 @@ export interface FetchNotesResponse {
 
 // --- АУТЕНТИФІКАЦІЯ (AUTH) ---
 
-export const register = async (data: RegisterRequest): Promise<User> => {
-  const res = await api.post<User>("/auth/register", data);
-  return res.data;
-};
 export const login = async (data: LoginData): Promise<User> => {
   const res = await api.post<User>("/auth/login", data);
   return res.data;
 };
 
+export const register = async (data: RegisterRequest): Promise<User> => {
+  const res = await api.post<User>("/auth/register", data);
+  return res.data;
+};
 export const logout = async (): Promise<void> => {
   await api.post("/auth/logout");
 };
